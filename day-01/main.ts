@@ -1,4 +1,4 @@
-const data = await Deno.readTextFile('day1/data.txt');
+const data = await Deno.readTextFile('day-01/data.txt');
 
 const WORDS_TO_VALUE: [string, number][] = [
   ['one', 1],
