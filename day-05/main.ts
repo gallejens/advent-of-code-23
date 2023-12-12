@@ -7,6 +7,7 @@ const seedNumbers = lines[0]
   .map(s => parseInt(s.trim()))
   .filter(s => !Number.isNaN(s));
 
+// originally solved this by bruteforce
 const solvePartOne = () => {
   const seeds = seedNumbers;
 
@@ -68,6 +69,7 @@ const solvePartOne = () => {
   console.log(`Part one answer: ${lowest}`);
 };
 
+// bruteforcing was not possible anymore do to the sheer amount of numbers
 const solvePartTwo = () => {
   console.time('benchmark');
 
@@ -103,14 +105,18 @@ const solvePartTwo = () => {
     seedRanges.push([seedNumbers[i], seedNumbers[i] + seedNumbers[i + 1]]);
   }
 
-  type Range = { from: [number, number]; to: [number, number]; depth: number };
+  // create ranges
+  type Range = {
+    from: [number, number];
+    to: [number, number];
+    depth: number;
+  };
 
-  // determine linked numnbers
   let currentDepth = 0;
   const ranges: Range[] = [
     {
-      from: [0, 2000],
-      to: [0, 2000],
+      from: [0, 1000000000000],
+      to: [0, 1000000000000],
       depth: -1,
     },
   ];
@@ -173,13 +179,6 @@ const solvePartTwo = () => {
 
           const leftBoundSame = newRange.from[0] === to[0];
 
-          // modify left side of original range if left bound isnt same
-          if (!leftBoundSame) {
-            const newOriginalBound = newRange.from[0] - 1;
-            from[1] = newOriginalBound;
-            to[1] = newOriginalBound - diff;
-          }
-
           // add leftover of original range on right side if right bound isnt same
           if (newRange.from[1] !== to[1]) {
             // if left bound was same, we dont add new range but modify original
@@ -197,6 +196,14 @@ const solvePartTwo = () => {
               });
             }
           }
+
+          // modify left side of original range if left bound isnt same
+          // we do this last because we need the original range to be unmodified
+          if (!leftBoundSame) {
+            const newOriginalBound = newRange.from[0] - 1;
+            from[1] = newOriginalBound;
+            to[1] = newOriginalBound - diff;
+          }
           continue;
         }
 
@@ -209,13 +216,24 @@ const solvePartTwo = () => {
     }
 
     currentDepth++;
-    break;
   }
 
   console.log(ranges.sort((a, b) => a.from[0] - b.from[0]));
 
+  // const solutions: number[] = [];
+
+  // for (const seed of seedNumbers) {
+  //   for (const range of ranges) {
+  //     if (seed > range.from[1] || seed < range.from[0]) continue;
+  //     const diff = seed - range.from[0];
+  //     solutions.push(range.to[0] + diff);
+  //   }
+  // }
+
+  // console.log(solutions);
+
   console.timeEnd('benchmark');
-  // console.log(`Part two answer: ${lowest}`);
+  console.log(`Part two answer: ${Math.min(...solutions)}`);
 };
 
 solvePartOne();
